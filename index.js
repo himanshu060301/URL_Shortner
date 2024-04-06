@@ -24,27 +24,4 @@ app.use("/url",restrictToLoggedinUserOnly,urlRoute);
 app.use("/user",userRoute);
 app.use("/",checkAuth,staticRoute);
 
-app.get('/url/:shortId', async(req,res)=>{
-    const shortId=req.params.shortId;
-    try {
-        const entry = await URL.findOneAndUpdate(
-            { shortId },
-            {
-                $push: {
-                    visitHistory: {
-                        timestamp: Date.now(),
-                    },
-                },
-            }
-        );
-        if (!entry) {
-            return res.status(404).send("URL not found");
-        }
-        res.redirect(entry.redirectURL);
-    } catch (error) {
-        console.error("Error:", error);
-        res.status(500).send("Internal Server Error");
-    }
-});
-
 app.listen(PORT,()=>console.log(`Server Started at PORT:${PORT}`));

@@ -27,7 +27,31 @@ const handleGetAnalytics= async(req,res)=>{
     });
 };
 
+const handleShortId= async(req,res)=>{
+    const shortId=req.params.shortId;
+    try {
+        const entry = await URL.findOneAndUpdate(
+            { shortId },
+            {
+                $push: {
+                    visitHistory: {
+                        timestamp: Date.now(),
+                    },
+                },
+            }
+        );
+        if (!entry) {
+            return res.status(404).send("URL not found");
+        }
+        res.redirect(entry.redirectURL);
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).send("Internal Server Error");
+    }
+}
+
 module.exports={
     handleGenerateNewShortURL,
     handleGetAnalytics,
+    handleShortId
 }
